@@ -1,0 +1,1844 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <link type="text/css" href="css/base.css" rel="stylesheet" />
+    <link type="text/css" href="css/Treemap.css" rel="stylesheet" />
+    <script src="src/sigma.core.js"></script>
+    <script src="src/conrad.js"></script>
+    <script src="src/utils/sigma.utils.js"></script>
+    <script src="src/utils/sigma.polyfills.js"></script>
+    <script src="src/sigma.settings.js"></script>
+    <script src="src/classes/sigma.classes.dispatcher.js"></script>
+    <script src="src/classes/sigma.classes.configurable.js"></script>
+    <script src="src/classes/sigma.classes.graph.js"></script>
+    <script src="src/classes/sigma.classes.camera.js"></script>
+    <script src="src/classes/sigma.classes.quad.js"></script>
+    <script src="src/classes/sigma.classes.edgequad.js"></script>
+    <script src="src/captors/sigma.captors.mouse.js"></script>
+    <script src="src/captors/sigma.captors.touch.js"></script>
+    <script src="src/renderers/sigma.renderers.canvas.js"></script>
+    <script src="src/renderers/sigma.renderers.webgl.js"></script>
+    <script src="src/renderers/sigma.renderers.svg.js"></script>
+    <script src="src/renderers/sigma.renderers.def.js"></script>
+    <script src="src/renderers/webgl/sigma.webgl.nodes.def.js"></script>
+    <script src="src/renderers/webgl/sigma.webgl.nodes.fast.js"></script>
+    <script src="src/renderers/webgl/sigma.webgl.edges.def.js"></script>
+    <script src="src/renderers/webgl/sigma.webgl.edges.fast.js"></script>
+    <script src="src/renderers/webgl/sigma.webgl.edges.arrow.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.labels.def.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.hovers.def.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.nodes.def.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.edges.def.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.edges.curve.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.edges.arrow.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.edges.curvedArrow.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.edgehovers.def.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.edgehovers.curve.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.edgehovers.arrow.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.edgehovers.curvedArrow.js"></script>
+    <script src="src/renderers/canvas/sigma.canvas.extremities.def.js"></script>
+    <script src="src/renderers/svg/sigma.svg.utils.js"></script>
+    <script src="src/renderers/svg/sigma.svg.nodes.def.js"></script>
+    <script src="src/renderers/svg/sigma.svg.edges.def.js"></script>
+    <script src="src/renderers/svg/sigma.svg.edges.curve.js"></script>
+    <script src="src/renderers/svg/sigma.svg.labels.def.js"></script>
+    <script src="src/renderers/svg/sigma.svg.hovers.def.js"></script>
+    <script src="src/middlewares/sigma.middlewares.rescale.js"></script>
+    <script src="src/middlewares/sigma.middlewares.copy.js"></script>
+    <script src="src/misc/sigma.misc.animation.js"></script>
+    <script src="src/misc/sigma.misc.bindEvents.js"></script>
+    <script src="src/misc/sigma.misc.bindDOMEvents.js"></script>
+    <script src="src/misc/sigma.misc.drawHovers.js"></script>
+
+    <script src="lib/jquery-2.1.1.min.js"></script>
+
+    <script src="plugins/sigma.plugins.dragNodes.min.js"></script>
+
+    <script src="plugins/sigma.renderers.customShapes.min.js"></script>
+
+    <script src="plugins/sigma.plugins.filter.js"></script> 
+
+    <script src="plugins/sigma.plugins.animate.min.js"></script>
+    <script src="plugins/sigma.layout.noverlap.min.js"></script>
+
+    <!-- DOMTreeMap Library File -->
+    <script language="javascript" type="text/javascript" src="DOMTreeMap.js"></script>
+
+  </head>
+  <body>
+    <div id="whole-container">
+      <style>
+        body {
+          color: #333;
+          font-size: 14px;
+          font-family: Lato, sans-serif;
+        }
+        a{
+          text-decoration: none;
+        }
+        #graph-container {
+          top: 50px;
+          bottom: 50px;
+          left: 300px;
+          right: 300px;
+          position: absolute;
+          border : 2px solid #ccc;
+          background-color: #ddd;
+        }
+        #sel-graph-container {
+          position : absolute;
+          top : 5%;
+          bottom : 5%;
+          left : 5%;
+          right : 5%;
+          background-color: rgb(249, 247, 237);
+        }
+        #control-pane, #report, #inout-report, #reportOnTreeMap{
+          top: 10px;
+          right: 10px;
+          position: absolute;
+          width: 240px;
+          background-color: rgb(249, 247, 237);
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+          max-height: 800px;
+          overflow: auto;
+        }
+        #graph-report {
+          position: absolute;
+          top: 100px;
+          bottom: 100px;
+          right : 20%;
+          left : 20%;
+          background-color: rgb(249, 247, 237);
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+          max-height: 800px;
+          overflow: auto;
+        }
+        #control-pane > div, #report > div, #inout-report > div, #reportOnTreeMap>div{
+          margin: 10px;
+          overflow-x: auto;
+        }
+        .line {
+          clear: both;
+          display: block;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          border-bottom: 1px solid #aac789;
+          background: transparent;
+        }
+        h2, h3, h4 {
+          padding: 0;
+          margin : 10px;
+          font-variant: small-caps;
+        }
+
+        .green {
+          color: #437356;
+        }
+
+        h2.underline {
+          color: #437356;
+          background: #f4f0e4;
+          margin: 0;
+          border-radius: 2px;
+          padding: 8px 12px;
+          font-weight: 700;
+        }
+        .hidden {
+          visibility: hidden;
+        }
+        input[type=range] {
+          width: 160px;
+        }
+        .legend{
+          padding: 5px;
+        }
+        .color-box{
+          box-sizing: border-box;
+          display: inline-block;
+          height: 20px;
+          width: 30px;
+        }
+        .comment{
+          display: inline-block;
+          vertical-align: 5px;
+        }
+        .close{
+          position : absolute;
+          top : 10px;
+          right : 20px;
+          text-decoration: none;
+          line-height : 1;
+        }
+        .close::after{
+          font-size: 24px;
+          font-weight: bold;
+          content : 'x';
+        }
+        #color-box-blue{
+          background-color: #668de5;
+        }
+        #color-box-green{
+          background-color: #71e096;
+        }
+        #color-box-cyan{
+          background-color: #90d4f7;
+        }
+        #color-box-purple{
+          background-color : #c497f2;
+        }
+        #id-search, .btn-search{
+          display : inline-block;
+          margin : 5px;
+        }
+        .row{
+          display : block;
+          width : 100%;
+        }
+        .col-6{
+          display : inline-block;
+          width : 50%;
+          float : left;
+          margin : 10px 0px;
+        }
+        .col-3{
+          display : inline-block;
+          width : 25%;
+          float : left;
+          text-align : center;
+          margin : 10px 0px;
+        }
+        .scrollable{
+          max-height : 600px;
+          overflow : auto;
+        }
+        .breadcrumb{
+          position : absolute;
+          left : 15px;
+          top : 15px;
+          font-size : 14px;
+        }
+        .treeMapLink{
+          position : absolute;
+          left : 15px;
+          top : 30px;
+          font-size : 14px;
+        }
+        #treeMapModalOverLay{
+          position : absolute;
+          top : 0px;
+          bottom : 0px;
+          left : 0px;
+          right : 0px;
+          display : none;
+          background : rgba(0,0,0,0.7);
+        }
+        div.breadcrumb a{
+          margin : 0px 10px;
+        }
+        div.treeMapLink{
+          margin-top : 20px;
+        }
+        </style>
+        <div id="graph-container">
+        </div>
+        <div id="control-pane">
+          <h2 class="underline">filters</h2>
+          <div>
+            <h3>search nodes by id</h3>
+            <div>
+              <input id="id-search" type="text">
+              <button class="btn-search" onclick="javascript:node_search();">Search</button>
+            </div>
+          </div>
+          <span class="line"></span>
+          <div>
+            <h3>min variance :&nbsp<span id="min-variance-val">0</span></h3>
+            0 <input id="min-variance" type="range" min="0" max="30" value="0">
+            <span id="max-variance-value">30</span><br>
+          </div>
+          <span class="line"></span>
+          <div>
+            <h3>business unit</h3>
+            <select id="business-category">
+            </select>
+          </div>
+          <span class="line"></span>
+          <div>
+            <h3>types</h3>
+            <div class="legend" id="sup-resource">
+              <div id="color-box-cyan" class="color-box"></div>
+              <div class="comment">Support Resource</div>
+            </div>
+            <div class="legend" id="pro-resource">
+              <div id="color-box-purple" class="color-box"></div>
+              <div class="comment">Production Resource</div>
+            </div>
+            <div class="legend" id="semi-finished">
+              <div id="color-box-green" class="color-box"></div>
+              <div class="comment">Semi-finished Product</div>
+            </div>
+            <div class="legend" id="finished">
+              <div id="color-box-blue" class="color-box"></div>
+              <div class="comment">Finished Product</div>
+            </div>
+          </div>
+        </div>
+        <div id="inout-report" class="hidden">
+        </div>
+        <div id="graph-report" class="hidden">
+          <a href="#" class="close" onclick = "javascript:hidePopup()"></a>
+          <div id="sel-graph-container"></div>
+        </div>
+        <div id="report" class="hidden">
+        </div>
+      </div>
+    </div>
+    <div id = 'treeMapModalOverLay'>
+      
+      <div id="container">
+
+        <div id="center-container">
+          <div id="infovis"></div>
+        </div>
+
+        <div id="right-container"></div>
+        <div id="log"></div>
+        <div id="reportOnTreeMap" class="hidden"></div>
+
+      </div>
+
+    </div>
+    <script>
+
+      var basic_graph_info = {
+        nodes: [],
+        edges: []
+      };//sigma graph
+
+      var whole_node_count;
+      var myNodes = [];
+
+      var colorsForKind = {
+        'Supp.Res' : '#90d4f7',
+        'Prod.Res' : '#c497f2',
+        'Fin.Prod' : '#668de5',
+        'Sem.Prod' : '#71e096'
+      };
+
+      var whole_edge_count;
+      var myEdges = [];
+
+      var basic_layer; //sigma object
+      
+      var _ = {
+        $: function (id) {
+          return document.getElementById(id);
+        }
+      }
+
+      var popup_count = 0;
+
+      var layerObjects = [];
+
+      var selectedNode;  //for selectd node
+      var lastClickedNode;
+
+      var mouseX, mouseY;
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      $(document).ready(function(){
+        $.ajax({
+          type : "GET",
+          url : "require/Nodes.csv",
+          dataType : "text",
+          success : function(data){processNodes(data);}
+        });
+      });
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      function processNodes(allText){
+
+        var allTextLines = allText.split(/\r\n|\n/);
+        var headers = allTextLines[0].split(',');
+        var lines = [];
+
+        whole_node_count = allTextLines.length-2;
+
+        for (var i=0 ; i < whole_node_count ; i++){
+          var data = allTextLines[i+1].split(',');
+          if(data.length == headers.length){
+            var node = {
+              id: 'n' + i,
+              label : '',
+              type: '',
+              category: '',
+              prefix : '',
+              kind: '',
+              x: 0,
+              y: 0,
+              size: 1,
+              color: '#666',
+              borderColor:'#666',
+              borderWidth:1,
+              version : '',
+              year : 0,
+              month : '',
+              variance : 0,
+              idleCap : 0,
+              email : '',
+              report : ''
+            };
+            for(var j=0 ; j<headers.length ; j++){
+              if(headers[j] == 'Version'){
+                node['version'] = data[j];
+              }
+              if(headers[j] == 'Year'){
+                node['year'] = parseInt(data[j]);
+              }
+              if(headers[j] == 'Month'){
+                node['month'] = data[j];
+              }
+              if(headers[j] == 'Bus.Unit'){
+                //node['color'] = colorsForBU[data[j]];
+                node['category'] = data[j];
+              }
+              if(headers[j] == 'Type'){
+                node['kind'] = data[j];
+                node['normal_color'] = colorsForKind[data[j]];
+                node['selected_color'] = '#ed6d79';
+                node['color'] = node['normal_color'];
+                if(node['kind'] == 'Supp.Res'){
+                  node['x'] = Math.random() / 2 ;
+                  node['y'] = Math.random() ;
+                }else if(node['kind'] == 'Prod.Res'){
+                  node['x'] = Math.random() / 2 + 0.7;
+                  node['y'] = Math.random() ;
+                }else if(node['kind'] == 'Sem.Prod'){
+                  node['x'] = Math.random() / 2 + 1.4;
+                  node['y'] = Math.random() ;
+                }else if(node['kind'] == 'Fin.Prod'){
+                  node['x'] = Math.random() / 2 + 2.1;
+                  node['y'] = Math.random() ;
+                }
+              }
+              if(headers[j] == 'Node'){
+                node['id'] = data[j];
+                if(data[j].substring(0,2)=='RP'){
+                  node['prefix'] = 'RP';
+                  node['type'] = 'equilateral';
+                  node.equilateral = {
+                    rotate: 45,
+                    numPoints: 4
+                  }
+                  //node['size'] = 1.2;
+                }else if(data[j].substring(0,2)=='BP'){
+                  node['prefix'] = 'BP';
+                  node['type'] = 'diamond';
+                  //node['size'] = 1.2;
+                }else if(data[j].substring(0,2)=='SF'){
+                  node['prefix'] = 'SF';
+                  node['type'] = 'equilateral';
+                  node.equilateral = {
+                    rotate: Math.random()*45, // random rotate up to 45 deg
+                    numPoints: 6
+                  }
+                }else if(data[j].substring(0,2)=='FP'){
+                  node['prefix'] = 'FP';
+                  node['type'] = 'equilateral';
+                  node.equilateral = {
+                    rotate: Math.random()*45, // random rotate up to 45 deg
+                    numPoints: 6
+                  }
+                }
+              }
+              if(headers[j] == 'Variance'){
+                var variance_percent = parseFloat(data[j]);
+                node['variance'] = variance_percent;
+                if(variance_percent<5){
+                  node['borderColor'] = node['color'];
+                  node['size'] = 0.9;
+                }else if(variance_percent < 15){
+                  node['borderColor'] = '#f5a26f';
+                  //node['size'] = 1.3;
+                }else{
+                  node['borderColor'] = '#f00';
+                  node['size'] = 0.8;
+                  /*if(node['type'] == 'diamond'){
+                    node['size'] = 1.1;
+                  }
+                  if(node['type'] == 'equilateral'){
+                    node['size'] = 1.2;
+                  }*/
+                }
+              }
+              if(headers[j] == 'Idle_Cap'){
+                node['idleCap'] = parseFloat(data[j]);
+              }
+              if(headers[j] == 'Email'){
+                node['email'] = data[j];
+              }
+              if(headers[j] == 'Report'){
+                node['report'] = data[j];
+              }
+            }
+            myNodes.push(node);
+            basic_graph_info.nodes.push(node);
+          }
+        }
+        $.ajax({
+          type : "GET",
+          url : "require/Edges.csv",
+          dataType : "text",
+          success : function(data){processEdges(data);}
+        });
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      sigma.utils.pkg('sigma.canvas.edges');
+      sigma.canvas.edges.t = function(edge, source, target, context, settings) {
+        var color = edge.color,
+            prefix = settings('prefix') || '',
+            edgeColor = settings('edgeColor'),
+            defaultNodeColor = settings('defaultNodeColor'),
+            defaultEdgeColor = settings('defaultEdgeColor');
+
+        if (!color)
+          switch (edgeColor) {
+            case 'source':
+              color = source.color || defaultNodeColor;
+              break;
+            case 'target':
+              color = target.color || defaultNodeColor;
+              break;
+            default:
+              color = defaultEdgeColor;
+              break;
+          }
+
+        context.strokeStyle = color;
+        context.lineWidth = edge[prefix + 'size'] || 1;
+        context.beginPath();
+        context.moveTo(
+          source[prefix + 'x'],
+          source[prefix + 'y']
+        );
+        context.lineTo(
+          source[prefix + 'x'],
+          target[prefix + 'y']
+        );
+        context.lineTo(
+          target[prefix + 'x'],
+          target[prefix + 'y']
+        );
+        context.stroke();
+      };
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      function processEdges(allText){
+        
+        var allTextLines = allText.split(/\r\n|\n/);
+        var headers = allTextLines[0].split(',');
+        var lines = [];
+
+        whole_edge_count = allTextLines.length-2;
+        //alert(whole_edge_count);
+
+        for (var i=0 ; i < whole_edge_count ; i++){
+          var data = allTextLines[i+1].split(',');
+          if(data.length == headers.length){
+            var edge = {
+              id: 'e' + i,
+              label: '',
+              size: 0.1,
+              type:'line',
+              propQty:0,
+              fixQty:0
+            }
+            for(var j=0 ; j<headers.length ; j++){
+
+              if(headers[j] == 'Sender'){
+                edge['source']=data[j];
+              }
+              if(headers[j] == 'Receiver'){
+                edge['target']=data[j];
+              }
+              if(headers[j] == 'PropQty'){
+                var temp = data[j];
+                edge['propQty'] = Math.round(temp * 100) / 100;
+              }
+              if(headers[j] == 'FixQty'){
+                var temp = data[j];
+                edge['fixQty'] = Math.round(temp * 100) / 100;
+              }
+            }
+            myEdges.push(edge);
+          }
+        }
+        draw_my_graph();
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      function draw_my_graph(){
+        basic_layer = new sigma({
+          graph: basic_graph_info,
+          renderer: {
+            container: document.getElementById('graph-container'),
+            type: 'canvas'
+          },
+          settings : {
+            maxNodeSize : 10,
+            immutable : false,
+            doubleClickEnabled: false,
+            drawEdges : false,
+            drawLabels : true,
+            edgeColor : 'target',
+            defaultEdgeColor : '#666',
+            animationsTime: 500
+          }
+        });
+
+        var noverlapListener = basic_layer.configNoverlap({
+          nodeMargin: 0.5,
+          scaleNodes: 1.1,
+          gridSize: 75,
+          easing: 'quadraticInOut', // animation transition function
+          duration: 1000   // animation duration. Long here for the purposes of this example only
+        });
+
+        // Bind the noverlap events:
+        noverlapListener.bind('start stop interpolate', function(e) {
+          console.log(e.type);
+          if(e.type === 'start') {
+            console.time('noverlap'); 
+          }
+          if(e.type === 'interpolate') {
+            console.timeEnd('noverlap');
+          }
+        });
+        
+        //Start Noverlap
+        basic_layer.startNoverlap();
+        
+        bind_events();
+        var dragListener = sigma.plugins.dragNodes(basic_layer, basic_layer.renderers[0]);
+        var myFilter = new sigma.plugins.filter(basic_layer);
+
+        layerObjects[0] = {
+          sigmaObject : basic_layer,
+          focusedNode : lastClickedNode,
+          filter : myFilter
+        };
+
+        var categories = {};
+        
+        // read nodes
+        layerObjects[popup_count]['sigmaObject']['graph'].nodes().forEach(function(n){
+          categories[n.category] = true;
+        });
+        
+        var nodeCategoryElt = _.$('business-category');
+
+        while(nodeCategoryElt.firstChild){
+          nodeCategoryElt.removeChild(nodeCategoryElt.firstChild);
+        }
+        var optionElt = document.createElement("option");
+        optionElt.text = 'All categories';
+        optionElt.value = '';
+        optionElt.selected = 'selected';
+        nodeCategoryElt.add(optionElt);
+
+        Object.keys(categories).forEach(function(c) {
+          optionElt = document.createElement("option");
+          optionElt.text = c;
+          nodeCategoryElt.add(optionElt);
+        });
+        
+        _.$('business-category').
+          addEventListener("change", function applyCategoryFilter(e){
+
+            var c = e.target[e.target.selectedIndex].value;
+            layerObjects['0']['filter']
+              .undo('business-category')
+              .nodesBy(function(n) {
+                return !c.length || n.category === ' '+c;
+              }, 'business-category')
+              .apply();
+        });
+
+        _.$('min-variance')
+            .addEventListener("input", function applyMinVarianceFilter(e){
+              var v = e.target.value;
+              _.$('min-variance-val').textContent = v;
+              layerObjects['0']['filter']
+                .undo('min-variance')
+                .nodesBy(function(n){
+                  return n['variance'] >= v;
+                }, 'min-variance')
+                .apply();
+            });  // for Chrome and FF
+        _.$('min-variance')
+            .addEventListener("change", function applyMinVarianceFilter(e){
+              var v = e.target.value;
+              _.$('min-variance-val').textContent = v;
+              layerObjects['0']['filter']
+                .undo('min-variance')
+                .nodesBy(function(n){
+                  return n['variance'] >= v;
+                }, 'min-variance')
+                .apply();
+            }); // for IE10+, that sucks
+
+        (function() {
+          document.onmousemove = handleMouseMove;
+          function handleMouseMove(event) {
+              var dot, eventDoc, doc, body, pageX, pageY;
+
+              event = event || window.event; // IE-ism
+
+              // If pageX/Y aren't available and clientX/Y are,
+              // calculate pageX/Y - logic taken from jQuery.
+              // (This is to support old IE)
+              if (event.pageX == null && event.clientX != null) {
+                  eventDoc = (event.target && event.target.ownerDocument) || document;
+                  doc = eventDoc.documentElement;
+                  body = eventDoc.body;
+
+                  event.pageX = event.clientX +
+                    (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+                    (doc && doc.clientLeft || body && body.clientLeft || 0);
+                  event.pageY = event.clientY +
+                    (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
+                    (doc && doc.clientTop  || body && body.clientTop  || 0 );
+              }
+
+              mouseX = event.clientX;
+              mouseY = event.clientY;
+
+              //console.log('mouseX = ' + mouseX + '; mouseY = ' + mouseY + ';');
+
+              // Use event.pageX / event.pageY here
+          }
+        })();
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      function bind_events(){
+
+        basic_layer.bind('clickNode', function(e){
+
+          if(lastClickedNode !== e.data.node){
+
+            if(typeof lastClickedNode != 'undefined'){
+
+              lastClickedNode['label'] = '';
+              lastClickedNode['color'] = lastClickedNode['normal_color'];
+
+            }
+
+            var theNode = e.data.node;
+            
+            if (typeof theNode['label'] === 'undefined' || theNode['label'] === ''){
+              basic_layer.graph.nodes(theNode['id'])['label'] = theNode['id'];
+              lastClickedNode = theNode;
+            }
+
+            basic_layer.refresh();
+          }
+
+        });
+
+        basic_layer.bind('doubleClickNode', function(e){
+
+          flickering = false;
+          selectedNode = basic_layer.graph.nodes(e.data.node['id']);
+          selectedNode['color'] = selectedNode['selected_color'];
+          showNodeReport(e.data.node, e.data.captor['clientX'], e.data.captor['clientY']);
+          selectedNode['label'] = selectedNode['id'];
+          lastClickedNode = basic_layer.graph.nodes(e.data.node['id']);
+          basic_layer.refresh();
+          popup_count = 0;
+
+        });
+
+        basic_layer.bind('clickStage', function(e){
+
+          flickering = false;
+          if(typeof selectedNode != 'undefined'){
+            selectedNode['color'] = selectedNode['normal_color'];
+          }
+          hideNodeReport();
+          hidePopup();
+          hideInOutReport ();
+          popup_count = 0;
+
+          if(typeof lastClickedNode !== 'undefined'){
+            lastClickedNode['color'] = lastClickedNode['normal_color'];
+            lastClickedNode['label'] = '';
+            lastClickedNode = undefined;
+          }
+
+          basic_layer.refresh();
+
+        });
+
+        basic_layer.bind('overNode', function(e){
+
+          e.data.node['label'] = e.data.node['id'];
+          basic_layer.refresh();
+
+        });
+
+        basic_layer.bind('outNode', function(e){
+
+          e.data.node['label'] = '';
+          basic_layer.refresh();
+
+        });
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      function hideNodeReport () {
+        
+        var reportElt = _.$('report');
+        while(reportElt.firstChild){
+          reportElt.removeChild(reportElt.firstChild);
+        }
+        reportElt.className="hidden";
+
+      }
+
+      function hideInOutReport () {
+        
+        var reportElt = _.$('inout-report');
+        while(reportElt.firstChild){
+          reportElt.removeChild(reportElt.firstChild);
+        }
+        reportElt.className="hidden";
+
+      }
+
+      function hidePopup(){
+
+        var reportElt = _.$('graph-report');
+        while(reportElt.firstChild){
+          reportElt.removeChild(reportElt.firstChild);
+        }
+
+        var reportSubElt = document.createElement("a");
+        reportSubElt.className = "close";
+        reportSubElt.href = "#";
+        reportSubElt.addEventListener('click', hidePopup);
+        reportElt.appendChild(reportSubElt);
+
+        reportSubElt = document.createElement("div");
+        reportSubElt.id = "sel-graph-container";
+        reportElt.appendChild(reportSubElt);
+        reportElt.className="hidden";
+
+      }
+
+      //----------------------------------------------------------------------------------------------------------------//
+
+      function showNodeReport (myNode, x, y){
+
+        hideNodeReport();
+        
+        var reportElt = _.$('report');
+
+        var reportSubElt = document.createElement("a");
+        reportSubElt.className = "close";
+        reportSubElt.href = "#";
+        reportSubElt.addEventListener('click', hideNodeReport);
+        reportElt.appendChild(reportSubElt);
+
+        var reportParaElt = document.createElement("h2");
+        var textnode = document.createTextNode('cost report');
+        reportParaElt.appendChild(textnode);
+        reportParaElt.className = "underline";
+        reportElt.appendChild(reportParaElt);
+        
+        var reportDivElt = document.createElement("div");
+        var innerDivElt;
+
+        reportParaElt = document.createElement("p");
+        textnode = document.createTextNode('Variance = ' + myNode['variance'] + '%');
+        reportParaElt.appendChild(textnode);
+        reportDivElt.appendChild(reportParaElt);
+
+        reportParaElt = document.createElement("p");
+        textnode = document.createTextNode('Excess/Idle Capacity = ' + myNode['idleCap'] + '%');
+        reportParaElt.appendChild(textnode);
+        reportDivElt.appendChild(reportParaElt);
+
+        reportParaElt = document.createElement("a");
+        reportParaElt.href = "javascript:window.open('mailto:test@example.com');";
+        textnode = document.createTextNode('Email = ' + myNode['email']);
+        reportParaElt.appendChild(textnode);
+        innerDivElt = document.createElement("div");
+        innerDivElt.appendChild(reportParaElt);
+        reportDivElt.appendChild(innerDivElt);
+
+        reportParaElt = document.createElement("a");
+        reportParaElt.href = "javascript:consumptionInOutbound('in');";
+        textnode = document.createTextNode('Consumption Inbound');
+        reportParaElt.appendChild(textnode);
+        innerDivElt = document.createElement("div");
+        innerDivElt.appendChild(reportParaElt);
+        reportDivElt.appendChild(innerDivElt);
+
+        reportParaElt = document.createElement("a");
+        reportParaElt.href = "javascript:consumptionInOutbound('out');";
+        textnode = document.createTextNode('Consumption Outbound');
+        reportParaElt.appendChild(textnode);
+        innerDivElt = document.createElement("div");
+        innerDivElt.appendChild(reportParaElt);
+        reportDivElt.appendChild(innerDivElt);
+
+        reportParaElt = document.createElement("a");
+        reportParaElt.href = "javascript:detailedCostReport();";
+        textnode = document.createTextNode('Detail Cost Report');
+        reportParaElt.appendChild(textnode);
+        innerDivElt = document.createElement("div");
+        innerDivElt.appendChild(reportParaElt);
+        reportDivElt.appendChild(innerDivElt);
+
+        reportElt.appendChild(reportDivElt);
+        reportElt.className = "report";
+        reportElt.style.position = 'absolute';
+        reportElt.style.left = x + 'px';
+        reportElt.style.top = y + 'px';
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+      function showNodeReportOnTreeMap(myNode, x, y){
+
+        hideNodeReportOnTreeMap();
+        
+        var reportElt = _.$('reportOnTreeMap');
+
+        var reportSubElt = document.createElement("a");
+        reportSubElt.className = "close";
+        reportSubElt.href = "#";
+        reportSubElt.addEventListener('click', hideNodeReportOnTreeMap);
+        reportElt.appendChild(reportSubElt);
+
+        var reportParaElt = document.createElement("h2");
+        var textnode = document.createTextNode('In / Out');
+        reportParaElt.appendChild(textnode);
+        reportParaElt.className = "underline";
+        reportElt.appendChild(reportParaElt);
+        
+        var reportDivElt = document.createElement("div");
+        var innerDivElt;
+
+        reportParaElt = document.createElement("a");
+        reportParaElt.href = "javascript:newTreeMapInOutbound('in', '" + myNode['id'] + "');";
+        textnode = document.createTextNode('Inbound');
+        reportParaElt.appendChild(textnode);
+        innerDivElt = document.createElement("div");
+        innerDivElt.appendChild(reportParaElt);
+        reportDivElt.appendChild(innerDivElt);
+
+        reportParaElt = document.createElement("a");
+        reportParaElt.href = "javascript:newTreeMapInOutbound('out', '" + myNode['id'] + "');";
+        textnode = document.createTextNode('Outbound');
+        reportParaElt.appendChild(textnode);
+        innerDivElt = document.createElement("div");
+        innerDivElt.appendChild(reportParaElt);
+        reportDivElt.appendChild(innerDivElt);
+
+        reportParaElt = document.createElement("a");
+        reportParaElt.href = "javascript:treeMapBackward();";
+        textnode = document.createTextNode('Backward');
+        reportParaElt.appendChild(textnode);
+        innerDivElt = document.createElement("div");
+        innerDivElt.appendChild(reportParaElt);
+        reportDivElt.appendChild(innerDivElt);
+
+        reportElt.appendChild(reportDivElt);
+        reportElt.className = "report";
+        reportElt.style.position = 'fixed';
+        reportElt.style.left = x + 10 + 'px';
+        reportElt.style.top = y + 10 + 'px';
+
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+      function hideNodeReportOnTreeMap(){
+
+        var reportElt = _.$('reportOnTreeMap');
+        while(reportElt.firstChild){
+          reportElt.removeChild(reportElt.firstChild);
+        }
+        reportElt.className="hidden";
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+      function newTreeMapInOutbound(inOut, node_id){
+
+        hideNodeReportOnTreeMap();
+        hideModal();
+        selectedNode = layerObjects[popup_count]['sigmaObject']['graph'].nodes(node_id);
+        selectedNode['color'] = selectedNode['selected_color'];
+        layerObjects[popup_count]['sigmaObject']['focusedNode'] = selectedNode;
+
+        flickering = false;
+        popup_count++;
+
+        showPopup();
+        configureLayerObject(selectedNode,inOut);
+        showInOutReport(layerObjects[popup_count]);
+        bind_popup_layer_event(layerObjects[popup_count]);
+        updateCategory();
+        showTreeMap();
+
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+      function treeMapBackward(){
+
+        hideNodeReportOnTreeMap();
+        hideModal();
+
+        flickering = false;
+        popup_count--;
+
+        showPopup();
+        redrawPopup();
+        showTreeMap();
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+      function updateCategory() {
+
+        var categories = {};
+        
+        // read nodes
+        layerObjects[popup_count]['sigmaObject']['graph'].nodes().forEach(function(n){
+          categories[n.category] = true;
+        });
+        
+        var nodeCategoryElt = _.$('business-category');
+
+        while(nodeCategoryElt.firstChild){
+          nodeCategoryElt.removeChild(nodeCategoryElt.firstChild);
+        }
+        var optionElt = document.createElement("option");
+        optionElt.text = 'All categories';
+        optionElt.value = '';
+        optionElt.selected = 'selected';
+        nodeCategoryElt.add(optionElt);
+
+        Object.keys(categories).forEach(function(c) {
+          optionElt = document.createElement("option");
+          optionElt.text = c;
+          nodeCategoryElt.add(optionElt);
+        });
+
+        //_.$('min-variance').max = maxDegree;
+        //_.$('max-variance-value').textContent = maxDegree;
+        
+        var sourceElt = _.$('business-category');
+        var cloneElt = _.$('business-category').cloneNode(true);
+        sourceElt.parentNode.replaceChild(cloneElt, sourceElt);
+        cloneElt
+        .addEventListener("change", function applyCategoryFilter(e){
+
+          var c = e.target[e.target.selectedIndex].value;
+          layerObjects[popup_count]['filter']
+            .undo('business-category')
+            .nodesBy(function(n) {
+              return !c.length || n.category === ' '+c;
+            }, 'business-category')
+            .apply();
+        });
+        sourceElt = _.$('min-variance');
+        cloneElt = _.$('min-variance').cloneNode(true);
+        sourceElt.parentNode.replaceChild(cloneElt, sourceElt);
+        cloneElt
+            .addEventListener("input", function applyMinVarianceFilter(e){
+              var v = e.target.value;
+              _.$('min-variance-val').textContent = v;
+              layerObjects[popup_count]['filter']
+                .undo('min-variance')
+                .nodesBy(function(n){
+                  return n['variance'] >= v;
+                }, 'min-variance')
+                .apply();
+            });  // for Chrome and FF
+
+        cloneElt
+            .addEventListener("change", function applyMinVarianceFilter(e){
+              var v = e.target.value;
+              _.$('min-variance-val').textContent = v;
+              layerObjects[popup_count]['filter']
+                .undo('min-variance')
+                .nodesBy(function(n){
+                  return n['variance'] >= v;
+                }, 'min-variance')
+                .apply();
+            }); // for IE10+, that sucks
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      function node_search(){
+
+        var v = _.$('id-search').value;
+
+        var node = layerObjects[popup_count]['sigmaObject']['graph'].nodes(v);
+
+        if(typeof node !== 'undefined'){
+
+          showNodeReport(node, 10, 10);
+          node['label'] = node['id'];
+          layerObjects[popup_count]['focusedNode'] = node;// not same with the one in g
+          if(popup_count === 0)
+            lastClickedNode = node;
+          flickering = true;
+          selectedNode = node;
+          layerObjects[popup_count]['sigmaObject'].refresh();
+
+        }else{
+          alert('The node you want does not exist. Please input the name correctly.');
+        }
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      var step = 0; //for animation
+      var flickering = false;
+
+      setInterval(function() {
+        if(flickering == true){
+          var prefix = ['normal_', 'selected_'][step = +!step];
+          sigma.plugins.animate(
+            layerObjects[popup_count]['sigmaObject'],
+            {
+              color: prefix + 'color'
+            },
+            {
+              nodes: [selectedNode['id']],
+            }
+          );
+        }
+      }, 1000);
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      function consumptionInOutbound(mode){//mode : 'in' 'out'
+
+        if(typeof selectedNode == 'undefined'){
+          alert("Nothing selected");
+        }else{
+
+          hideNodeReport();
+
+          flickering = false;
+
+          popup_count++;
+
+          showPopup();
+          configureLayerObject(selectedNode,mode);
+          showInOutReport(layerObjects[popup_count]);
+          bind_popup_layer_event(layerObjects[popup_count]);
+          updateCategory();
+        }
+      }
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+      function configureLayerObject(centeredNode, inOutMode){
+
+        var tempGraph = {
+          nodes : [],
+          edges : []
+        };
+
+        var theCenterNode = {
+          id : centeredNode['id'],
+          label : centeredNode['id'],
+          type : centeredNode['type'],
+          category : centeredNode['category'],
+          kind : centeredNode['kind'],
+          size : centeredNode['size'],
+          color : centeredNode['color'],
+          borderColor : centeredNode['normal_color'],
+          x : 0,
+          y : 0,
+          version : centeredNode['version'],
+          year : centeredNode['year'],
+          variance : centeredNode['variance'],
+          idleCap : centeredNode['idleCap'],
+          email : centeredNode['email'],
+          report : centeredNode['report'],
+          normal_color : centeredNode['normal_color'],
+          selected_color : centeredNode['selected_color']
+        }
+
+        if(centeredNode['type'] === 'equilateral'){
+          theCenterNode.equilateral = centeredNode.equilateral;
+        }
+
+        tempGraph.nodes.push(theCenterNode);
+
+        var count = 1;                                              
+
+        var tempSigma = new sigma({
+          
+          graph: tempGraph,
+          
+          renderer: {
+            container: document.getElementById('sel-graph-container'),
+            type: 'canvas'
+          },
+          
+          settings : {
+            maxNodeSize : 10,
+            immutable : false,
+            doubleClickEnabled: false,
+            drawEdges : true,
+            drawLabels : true,
+            edgeColor : 'source',
+            defaultEdgeColor : '#666',
+            animationsTime: 500
+          }
+        });
+
+        if(inOutMode === 'in'){
+          myEdges.forEach(function(edge){
+            if(edge.target == centeredNode['id']){
+              tempSigma['graph'].addNode(basic_layer.graph.nodes(edge['source']));
+              var temp = tempSigma['graph'].nodes(edge['source']);
+              temp['borderColor'] = temp['color'];
+              tempSigma['graph'].addEdge(edge);
+              count++;
+            }
+          });
+        }else if(inOutMode === 'out'){
+          myEdges.forEach(function(edge){
+            if(edge.source === centeredNode['id']){
+              tempSigma.graph.addNode(basic_layer.graph.nodes(edge['target']));
+              var temp = tempSigma['graph'].nodes(edge['target']);
+              temp['borderColor'] = temp['color'];
+              tempSigma.graph.addEdge(edge);
+              count++;
+            }
+          });
+        };
+
+        var pos = 0;
+        var tempNodeCount = 1;
+
+        tempSigma.graph.nodes().forEach(function(node){
+          node['label'] = node['id'];
+          if(node['id'] != selectedNode['id']){
+            pos++;
+            tempNodeCount++;
+            node['x'] = Math.cos(2 * Math.PI * pos / (count -1) + Math.PI / 4);
+            node['y'] = Math.sin(2 * Math.PI * pos / (count -1) + Math.PI / 4);
+          }
+        });
+
+        tempFilter = new sigma.plugins.filter(tempSigma);
+
+        var layerObject = {
+          sigmaObject : tempSigma,
+          centerNode : tempSigma.graph.nodes(centeredNode['id']),
+          focusedNode : tempSigma.graph.nodes(centeredNode['id']),
+          inOut : inOutMode,
+          layerNodeCount : tempNodeCount,
+          filter : tempFilter
+        };
+
+        layerObject.sigmaObject.refresh();
+        layerObjects[popup_count] = layerObject;
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+      function showPopup(){
+
+        hidePopup();
+
+        flickering = false;
+
+        var reportElt = _.$('graph-report');
+        reportElt.className="report";
+
+        var breadcrumb = document.createElement("div");
+        breadcrumb.className = 'breadcrumb';
+        var layerSpan = document.createElement("a");
+        layerSpan.href = '#';
+        var textnode = document.createTextNode('L1');
+        layerSpan.appendChild(textnode);
+        layerSpan.addEventListener('click',function(){
+
+          popup_count = 1;
+          showPopup();
+          redrawPopup();
+          showInOutReport(layerObjects[popup_count]);
+          bind_popup_layer_event(layerObjects[popup_count]);
+
+        });
+
+        breadcrumb.appendChild(layerSpan);
+
+        var i = 2;
+
+        while(i <= popup_count){
+          var next = document.createElement('span');
+          textnode = document.createTextNode('  >  ');
+          next.appendChild(textnode);
+          layerSpan = document.createElement("a");
+          textnode = document.createTextNode('L'+i);
+          layerSpan.appendChild(textnode);
+          layerSpan.href = '#';
+          layerSpan.value = i;
+          layerSpan.addEventListener('click', function(e){
+            
+            popup_count = e.target.value;
+            showPopup();
+            redrawPopup();
+            showInOutReport(layerObjects[popup_count]);
+            bind_popup_layer_event(layerObjects[popup_count]);
+
+          });
+          breadcrumb.appendChild(next);
+          breadcrumb.appendChild(layerSpan);
+          i++;
+        }
+
+        reportElt.appendChild(breadcrumb);
+
+        var treeMapLink = document.createElement("div");
+        treeMapLink.className = 'treeMapLink';
+
+        var treeLink = document.createElement("a");
+        treeLink.href = '#';
+        textnode = document.createTextNode('View As Tree Map');
+        treeLink.appendChild(textnode);
+        treeLink.addEventListener('click',function(){
+          showTreeMap();
+        });
+
+        treeMapLink.appendChild(treeLink);
+        reportElt.appendChild(treeMapLink);
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+      function showTreeMap(){
+
+        var mapOverlay = _.$('treeMapModalOverLay');
+        mapOverlay.style.display = 'block';
+
+        var Log = {
+          elem: false,
+          write: function(text){
+            if (!this.elem)
+              this.elem = document.getElementById('log');
+            this.elem.innerHTML = text;
+            this.elem.style.left = (500 - this.elem.offsetWidth / 2) + 'px';
+          }
+        };
+
+        function addEvent(obj, type, fn) {
+            if (obj.addEventListener) obj.addEventListener(type, fn, false);
+            else obj.attachEvent('on' + type, fn);
+        };
+
+        function init(){
+            
+            //init data
+            //console.log('init started');console.log(layerObjects[popup_count]);
+            if(layerObjects[popup_count]['layerNodeCount'] > 1){
+              
+              var sum = 0, sum_bp = 0, sum_rp = 0, sum_fp = 0, sum_sf = 0, bp_count = 0, rp_count = 0, fp_count = 0, sf_count = 0;
+              var outIn = layerObjects[popup_count]['inOut'],prefix;
+              var bp_children = [], rp_children = [], fp_children = [], sf_children = [], tempChildren = [];
+
+              layerObjects[popup_count]['sigmaObject']['graph'].edges().forEach(function(edge){
+                sum += edge['propQty'];
+                sum += edge['fixQty'];
+
+                var child, prefix;
+
+                if(outIn === 'in'){
+                  child = {
+                    children : [],
+                    data : {
+                      $area : edge['propQty'] + edge['fixQty'],
+                      $color : 0,
+                    },
+                    id : edge['source'],
+                    name : edge['source']
+                  };
+
+                  prefix = layerObjects[popup_count]['sigmaObject']['graph'].nodes(edge['source'])['prefix'];
+                }
+                else if(outIn === 'out'){
+                  child = {
+                    children : [],
+                    data : {
+                      $area : edge['propQty'] + edge['fixQty'],
+                      $color : 0,
+                    },
+                    id : edge['target'],
+                    name : edge['target']
+                  };
+
+                  prefix = layerObjects[popup_count]['sigmaObject']['graph'].nodes(edge['target'])['prefix'];
+                }
+                //console.log(child);
+                //console.log(prefix);
+                //console.log(sum);
+
+                var i = 0;
+                while(i < tempChildren['length'] && child['data']['$area'] < tempChildren[i]['data']['$area'])
+                  i++;
+                tempChildren.splice(i, 0, child);
+                //console.log(i);
+
+                if(prefix === 'BP'){
+                  bp_children.push(child);
+                  bp_count++;
+                  sum_bp += child['data']['$area'];//console.log('bp');
+                }else if(prefix === 'RP'){
+                  rp_children.push(child);
+                  rp_count++;
+                  sum_rp += child['data']['$area'];//console.log('rp');
+                }else if(prefix === 'FP'){
+                  fp_children.push(child);
+                  fp_count++;
+                  sum_fp += child['data']['$area'];//console.log('fp');
+                }else if(prefix === 'SF'){
+                  sf_children.push(child);
+                  sf_count++;
+                  sum_sf += child['data']['$area'];//console.log('sf');
+                }
+              });
+
+              var i = 0;
+              while( i < tempChildren['length'] ){
+                tempChildren[i]['data']['$color'] = i + 1;//console.log(i);
+                i++;
+              }
+
+              var json = {
+                children : [],
+                data: {
+                  $area : sum,
+                  node : layerObjects[popup_count]['centerNode']['id'],
+                  nodeCount : layerObjects[popup_count]['layerNodeCount'] - 1,
+                  direction : outIn
+                },
+                id: layerObjects[popup_count]['centerNode']['id'],
+                name: "Focused Unit"
+              };//console.log(json);
+
+              if(bp_children['length'] !== 0){
+                json['children'].push({
+                  children : bp_children,
+                  data : {
+                    $area : sum_bp,
+                    nodeCount : bp_count
+                  },
+                  id : 'BP',
+                  name : 'BP'
+                });//console.log(json);
+              }
+              if(rp_children['length'] !== 0){
+                json['children'].push({
+                  children : rp_children,
+                  data : {
+                    $area : sum_rp,
+                    nodeCount : rp_count
+                  },
+                  id : 'RP',
+                  name : 'RP'
+                });//console.log(json);
+              }
+              if(fp_children['length'] !== 0){
+                json['children'].push({
+                  children : fp_children,
+                  data : {
+                    $area : sum_fp,
+                    nodeCount : fp_count
+                  },
+                  id : 'FP',
+                  name : 'FP'
+                });//console.log(json);
+              }
+              if(sf_children['length'] !== 0){
+                json['children'].push({
+                  children : sf_children,
+                  data : {
+                    $area : sum_sf,
+                    nodeCount : sf_count
+                  },
+                  id : 'SF',
+                  name : 'SF'
+                });//console.log(json);
+              }
+            }
+
+            var infovis = document.getElementById('infovis');
+            var w = infovis.offsetWidth, h = infovis.offsetHeight;
+            infovis.style.width = w + 'px';
+            infovis.style.height = h + 'px';
+            //console.log('ffffffffffff');
+            //init tm
+            var tm = new TM.Squarified({
+                //Where to inject the treemap.
+                rootId: 'infovis',
+
+                //Add click handlers for
+                //zooming the Treemap in and out
+                addLeftClickHandler: true,
+                addRightClickHandler: true,
+                
+                //When hovering a node highlight the nodes
+                //between the root node and the hovered node. This
+                //is done by adding the 'in-path' CSS class to each node.
+                selectPathOnHover: true,
+                        
+                Color: {
+                    //Allow coloring
+                    enable: true,
+                    //Set min value and max value constraints
+                    //for the *$color* property value.
+                    //Default's to -100 and 100.
+                    minValue: 1,
+                    maxValue: 100,
+                    //Set color range. Default's to reddish and greenish.
+                    //It takes an array of three
+                    //integers as R, G and B values.
+                    minColorValue: [0, 255, 50],
+                    maxColorValue: [255, 0, 50]
+                },
+                
+                //Allow tips
+                Tips: {
+                  enable: true,
+                  //add positioning offsets
+                  offsetX: 20,
+                  offsetY: 20,
+                  //implement the onShow method to
+                  //add content to the tooltip when a node
+                  //is hovered
+                  onShow: function(tip, node, isLeaf, domElement) {
+                      tip.innerHTML = "<div class=\"tip-title\">" + node.name + "</div>" + 
+                        "<div class=\"tip-text\">" + this.makeHTMLFromData(node.data) + "</div>"; 
+                  },  
+
+                  //Build the tooltip inner html by taking each node data property
+                  makeHTMLFromData: function(data){//console.log('asdfsafsdaafsda');
+                      var html = '';
+                      html += "cost" + ': ' + data.$area + '<br />';
+                      if ("node" in data) 
+                          html += "node" + ': ' + data.node + '<br />';
+                      if ("nodeCount" in data) 
+                          html += "nodeCount" + ': ' + data.nodeCount + '<br />';
+                      if ("direction" in data) 
+                          html += "direction" + ': ' + data.direction + '<br />';
+                      if ("$color" in data) 
+                          html += "rank" + ': ' + data.$color + '<br />';
+                      if ("image" in data) 
+                          html += "<img class=\"album\" src=\"" + data.image + "\" />";
+                      return html;
+                  }
+                },
+
+                //Remove all element events before destroying it.
+                onDestroyElement: function(content, tree, isLeaf, leaf){
+                    if(leaf.clearAttributes) leaf.clearAttributes();
+                }
+            });
+            
+            TM.Squarified.implement({
+              'onLeftClick': function(elem) {
+                //console.log(layerObjects[popup_count]['sigmaObject']['graph'].nodes(elem.parentNode['id']));
+                showNodeReportOnTreeMap(layerObjects[popup_count]['sigmaObject']['graph'].nodes(elem.parentNode['id']), mouseX, mouseY);
+              }
+            });
+            
+            //load JSON and plot
+            if(typeof json !== 'undefined')
+              tm.loadJSON(json);
+            //end
+            
+        }
+
+        init();//console.log('init completed');
+        
+        $('#container').on('click',function(e){
+          e.stopPropagation();
+        });
+
+        $('#treeMapModalOverLay').on('click',function(e){
+          hideModal();
+        });
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+      function hideModal(){
+
+        var mapOverlay = _.$('treeMapModalOverLay');
+        while(mapOverlay.firstChild){
+          mapOverlay.removeChild(mapOverlay.firstChild);
+        }
+
+        var mapOverlaySubElt = document.createElement("div");
+        mapOverlaySubElt.id = "container";
+        var mapOverlaySubSubElt = document.createElement("div");
+        mapOverlaySubSubElt.id = "center-container";
+        var mapOverlaySubSubSubElt = document.createElement("div");
+        mapOverlaySubSubSubElt.id = "infovis";
+        mapOverlaySubSubElt.appendChild(mapOverlaySubSubSubElt);
+        mapOverlaySubElt.appendChild(mapOverlaySubSubElt);
+
+        mapOverlaySubSubElt = document.createElement("div");
+        mapOverlaySubSubElt.id = "right-container";
+        mapOverlaySubElt.appendChild(mapOverlaySubSubElt);
+
+        mapOverlaySubSubElt = document.createElement("div");
+        mapOverlaySubSubElt.id = "log";
+        mapOverlaySubElt.appendChild(mapOverlaySubSubElt);
+
+        mapOverlaySubSubElt = document.createElement("div");
+        mapOverlaySubSubElt.id = "reportOnTreeMap";
+        mapOverlaySubSubElt.className = "hidden";
+        mapOverlaySubElt.appendChild(mapOverlaySubSubElt);
+
+        mapOverlay.appendChild(mapOverlaySubElt);
+        mapOverlay.style.display = 'none';
+      }
+      
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+      function showInOutReport(aLayerObject){
+
+        hideInOutReport();
+
+        var inoutReportElt = _.$('inout-report');
+        var reportDivElt, spanElt, innerDivElt, colDivElt;
+        reportDivElt = document.createElement("div");
+
+        if(aLayerObject.inOut === 'in'){
+          reportParaElt = document.createElement("p");
+          textnode = document.createTextNode('Receiver  =  ' + aLayerObject.centerNode['id']);
+          reportParaElt.appendChild(textnode);
+          reportDivElt.appendChild(reportParaElt);
+        }
+        else if(aLayerObject.inOut === 'out'){
+          reportParaElt = document.createElement("p");
+          textnode = document.createTextNode('Sender  =  ' + aLayerObject.centerNode['id']);
+          reportParaElt.appendChild(textnode);
+          reportDivElt.appendChild(reportParaElt);
+        }
+
+        spanElt = document.createElement("span");
+        spanElt.className = "line";
+        reportDivElt.appendChild(spanElt);
+
+        innerDivElt = document.createElement("div");
+        innerDivElt.className = 'row';
+        
+        if(aLayerObject.inOut === 'in'){
+          colDivElt = document.createElement("div");
+          colDivElt.className = 'col-6';
+          textnode = document.createTextNode('Sender');
+          colDivElt.appendChild(textnode);
+          innerDivElt.appendChild(colDivElt);
+        }
+        else if(aLayerObject.inOut === 'out'){
+          colDivElt = document.createElement("div");
+          colDivElt.className = 'col-6';
+          textnode = document.createTextNode('Receiver');
+          colDivElt.appendChild(textnode);
+          innerDivElt.appendChild(colDivElt);
+        }
+
+        colDivElt = document.createElement("div");
+        colDivElt.className = 'col-3';
+        textnode = document.createTextNode('PropQty');
+        colDivElt.appendChild(textnode);
+        innerDivElt.appendChild(colDivElt);
+
+        colDivElt = document.createElement("div");
+        colDivElt.className = 'col-3';
+        textnode = document.createTextNode('FixQty');
+        colDivElt.appendChild(textnode);
+        innerDivElt.appendChild(colDivElt);
+
+        reportDivElt.appendChild(innerDivElt);
+
+        var scrollDivElt = document.createElement("div");
+        scrollDivElt.className = "row scrollable";
+
+        aLayerObject['sigmaObject']['graph'].edges().forEach(function(edge){
+
+          innerDivElt = document.createElement("div");
+          innerDivElt.className = 'row';
+          
+          colDivElt = document.createElement("div");
+          colDivElt.className = 'col-6';
+          if(aLayerObject['inOut'] == 'in'){
+            textnode = document.createTextNode(edge['source']);
+          }else if(aLayerObject['inOut'] == 'out'){
+            textnode = document.createTextNode(edge['target']);
+          }
+          colDivElt.appendChild(textnode);
+          innerDivElt.appendChild(colDivElt);
+
+          colDivElt = document.createElement("div");
+          colDivElt.className = 'col-3';
+          textnode = document.createTextNode(edge['propQty']);
+          colDivElt.appendChild(textnode);
+          innerDivElt.appendChild(colDivElt);
+
+          colDivElt = document.createElement("div");
+          colDivElt.className = 'col-3';
+          textnode = document.createTextNode(edge['fixQty']);
+          colDivElt.appendChild(textnode);
+          innerDivElt.appendChild(colDivElt);
+
+          scrollDivElt.appendChild(innerDivElt);
+        });
+
+        reportDivElt.appendChild(scrollDivElt);
+        inoutReportElt.appendChild(reportDivElt);
+        inoutReportElt.className='report';
+        inoutReportElt.style.position='absolute';
+        inoutReportElt.style.left = '10px';
+        inoutReportElt.style.top = '10px';
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+
+      function bind_popup_layer_event(aLayerObject){
+
+        aLayerObject['sigmaObject'].bind('doubleClickNode', function(e){
+
+          hideNodeReport();
+
+          selectedNode = aLayerObject['sigmaObject'].graph.nodes(e.data.node['id']);
+          selectedNode['color'] = selectedNode['selected_color'];
+          showNodeReport(e.data.node, e.data.captor['clientX'], e.data.captor['clientY']);
+
+          aLayerObject['sigmaObject']['focusedNode'] = selectedNode;
+          aLayerObject['sigmaObject'].refresh();
+
+        });
+
+        aLayerObject['sigmaObject'].bind('clickNode', function(e){
+
+          if(typeof aLayerObject['focusedNode'] === 'undefined' || e.data.node['id'] !== aLayerObject['focusedNode']['id']){
+
+            hideNodeReport();
+
+            if(typeof aLayerObject['focusedNode'] !== 'undefined'){
+              aLayerObject['focusedNode']['color'] = aLayerObject['focusedNode']['normal_color'];
+            }
+
+            aLayerObject['focusedNode'] = aLayerObject['sigmaObject']['graph'].nodes(e.data.node['id']);
+            aLayerObject['focusedNode']['color'] = aLayerObject['focusedNode']['selected_color'];
+
+            aLayerObject['sigmaObject'].refresh();
+
+          }
+
+        });
+
+        aLayerObject['sigmaObject'].bind('clickStage', function(e){
+
+          flickering = false;
+
+          if(typeof aLayerObject['focusedNode'] != 'undefined'){
+
+            if(aLayerObject['focusedNode']['color'] !== aLayerObject['focusedNode']['normal_color']){
+              aLayerObject['focusedNode']['color'] = aLayerObject['focusedNode']['normal_color'];
+              aLayerObject['focusedNode'] = undefined;
+              aLayerObject['sigmaObject'].refresh();
+
+            };
+          }
+        });
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+      function redrawPopup(){
+
+        var tempGraph = {
+          nodes : layerObjects[popup_count]['sigmaObject']['graph'].nodes(),
+          edges : layerObjects[popup_count]['sigmaObject']['graph'].edges()
+        }
+
+        var tempSigma = new sigma({
+          
+          graph: tempGraph,
+          
+          renderer: {
+            container: document.getElementById('sel-graph-container'),
+            type: 'canvas'
+          },
+          
+          settings : {
+            maxNodeSize : 10,
+            immutable : false,
+            doubleClickEnabled: false,
+            drawEdges : true,
+            drawLabels : true,
+            edgeColor : 'source',
+            defaultEdgeColor : '#666',
+            animationsTime: 500
+          }
+        });
+
+        var focused = layerObjects[popup_count]['focusedNode'];
+        if(typeof focused !== 'undefined')
+          var focused = tempSigma['graph'].nodes(layerObjects[popup_count]['focusedNode']['id']);
+
+        tempFilter = new sigma.plugins.filter(tempSigma);
+
+        var layerObject = {
+
+          sigmaObject : tempSigma,
+          centerNode : tempSigma['graph'].nodes(layerObjects[popup_count]['centerNode']['id']),
+          focusedNode : focused,
+          inOut : layerObjects[popup_count]['inOut'],
+          layerNodeCount : layerObjects[popup_count]['layerNodeCount'],
+          filter : tempFilter
+
+        };
+
+        bind_popup_layer_event(layerObject);
+        layerObject['sigmaObject'].refresh();
+        layerObjects[popup_count] = layerObject;
+        
+        updateCategory();
+      }
+
+      //-----------------------------------------------------------------------------------------------------------------//
+      
+
+
+    </script>
+  </body>
+</html>
